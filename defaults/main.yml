@@ -1,0 +1,40 @@
+---
+
+################################################################################### CHANGE ME
+
+squid_internal_ip: 75.118.161.192
+
+squid_backend_servers:
+  - { ip: "{{ squid_internal_ip }}", port: 8000, name: blog }
+  - { ip: "{{ squid_internal_ip }}", port: 8001, name: nextcloud }
+  - { ip: "{{ squid_internal_ip }}", port: 8002, name: gitlab }
+
+squid_blog_denied_subdirs:
+  - css
+  - feed.xml
+  - fonts
+  - images
+  - js
+  - sitemap.xml
+
+httpd_ssl_cert_country: US
+httpd_ssl_cert_state: OH
+httpd_ssl_cert_locality: Columbus
+
+################################################################################### SANE DEFAULTS
+
+# MB that the squid cache is allowed to occupy
+squid_cache_mb: 1000
+# number of top-level directories to cache
+squid_cache_l1: 16
+# number of second-level directories to cache
+squid_cache_l2: 256
+
+## SSL Cert
+
+squid_ssl_cert_file: /etc/ssl/publickeycert.pem
+squid_ssl_key_file: /etc/ssl/publickeycert.pem
+
+httpd_ssl_cert_common_name: "{{ ansible_domain }}"
+httpd_ssl_cert_subj_string: "/C={{ httpd_ssl_cert_country }}/ST={{ httpd_ssl_cert_state }}/L={{ httpd_ssl_cert_locality }}/CN={{ httpd_ssl_cert_common_name }}"
+httpd_ssl_cert_days: 3650

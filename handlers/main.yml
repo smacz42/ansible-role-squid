@@ -1,0 +1,7 @@
+---
+# Handler actions. This is typically a restart of a service.
+
+- name: Restart squid
+  service:
+    name: squid
+    state: restarted

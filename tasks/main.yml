@@ -1,0 +1,8 @@
+---
+# Tasks for Squid
+
+- include: squid_install.yml
+  tags: [squid,squid_install,install]
+
+- include: squid_config.yml
+  tags: [squid,squid_config,config]

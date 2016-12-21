@@ -1,0 +1,25 @@
+---
+
+- name: (squid_install) [1/2] Squid proxy server is installed
+  package:
+    name: squid
+    state: latest
+  register: new_squid_install
+
+- name: (squid_install) [2/2] Squid proxy server is enabled on boot
+  service:
+    name: squid
+    enabled: yes
+
+- name: (squid_install) [3/3] Squid cache dir is present
+  file:
+    path: /var/spool/squid
+    state: directory
+    owner: squid
+    group: squid
+
+- name: (squid_install) [4/4] New self-signed SSL cert/key pair is generated and deployed
+  command: openssl req -x509 -newkey rsa:2048 -nodes -subj "{{ httpd_ssl_cert_subj_string }}" -days 3650 -keyout {{ squid_ssl_key_file }} -out {{ squid_ssl_cert_file }}
+  args:
+    creates: /etc/httpd/ssl/apache.pem
+  when: new_squid_install|changed

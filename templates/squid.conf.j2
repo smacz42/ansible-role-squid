@@ -1,0 +1,40 @@
+# Squid normally listens to port 3128
+https_port 443 accel defaultsite={{ ansible_domain }} cert={{ squid_ssl_cert_file }} key={{ squid_ssl_key_file }}
+http_port 80 accel defaultsite={{ ansible_domain }}
+
+redirect_program /usr/bin/python /etc/squid/redirect_to_https.py
+redirect_children 5
+cache_dir ufs /var/spool/squid {{ squid_cache_mb }} {{ squid_cache_l1 }} {{ squid_cache_l2 }}
+
+{% for host in squid_backend_servers %}
+{% if 'blog' not in host.name %}
+acl {{ host.name }} urlpath_regex ^/{{ host.name }}
+{% else %}
+acl {{ host.name }} dstdomain {{ ansible_domain }}
+{% endif %}
+{% endfor %}
+
+sslproxy_flags DONT_VERIFY_PEER
+
+{% for host in squid_backend_servers %}
+cache_peer {{ host.ip }} parent {{ host.port }} 0 no-query originserver name={{ host.name }} ssl sslflags=DONT_VERIFY_PEER login=PASS
+{% if 'blog' in host.name %}
+{% for deny_host in squid_backend_servers %}
+{% if deny_host.name != 'blog' %}
+cache_peer_access {{ host.name }} deny {{ deny_host.name }}
+{% endif %}
+{% endfor %}
+http_access allow {{ host.name }}
+{% else %}
+cache_peer_access {{ host.name }} allow {{ host.name }}
+cache_peer_access {{ host.name }} deny all
+no_cache deny {{ host.name }}
+http_access allow {{ host.name }}
+
+{% endif %}
+{% endfor %}
+
+http_access deny to_localhost
+http_access deny all
+
+access_log /var/log/squid/access.log squid
