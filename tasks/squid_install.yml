@@ -1,17 +1,17 @@
 ---
 
-- name: (squid_install) [1/2] Squid proxy server is installed
+- name: (squid_install) [1/4] Squid proxy server is installed
   package:
     name: squid
     state: latest
   register: new_squid_install
 
-- name: (squid_install) [2/2] Squid proxy server is enabled on boot
+- name: (squid_install) [2/4] Squid proxy server is enabled on boot
   service:
     name: squid
     enabled: yes
 
-- name: (squid_install) [3/3] Squid cache dir is present
+- name: (squid_install) [3/4] Squid cache dir is present
   file:
     path: /var/spool/squid
     state: directory
