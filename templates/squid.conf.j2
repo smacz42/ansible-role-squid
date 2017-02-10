@@ -1,10 +1,8 @@
-# Squid normally listens to port 3128
 https_port 443 accel defaultsite={{ ansible_domain }} cert={{ squid_ssl_cert_file }} key={{ squid_ssl_key_file }}
 http_port 80 accel defaultsite={{ ansible_domain }}
 
-redirect_program /usr/bin/python /etc/squid/redirect_to_https.py
-redirect_children 5
 cache_dir ufs /var/spool/squid {{ squid_cache_mb }} {{ squid_cache_l1 }} {{ squid_cache_l2 }}
+sslproxy_flags DONT_VERIFY_PEER
 
 {% for host in squid_backend_servers %}
 {% if 'blog' not in host.name %}
@@ -13,8 +11,10 @@ acl {{ host.name }} urlpath_regex ^/{{ host.name }}
 acl {{ host.name }} dstdomain {{ ansible_domain }}
 {% endif %}
 {% endfor %}
+acl ssl_redirect localport 80
 
-sslproxy_flags DONT_VERIFY_PEER
+http_access deny ssl_redirect blog
+deny_info https://%H%R blog
 
 {% for host in squid_backend_servers %}
 cache_peer {{ host.ip }} parent {{ host.port }} 0 no-query originserver name={{ host.name }} ssl sslflags=DONT_VERIFY_PEER login=PASS

@@ -24,11 +24,11 @@ httpd_ssl_cert_locality: Columbus
 ################################################################################### SANE DEFAULTS
 
 # MB that the squid cache is allowed to occupy
-squid_cache_mb: 1000
+squid_cache_mb: 2000
 # number of top-level directories to cache
-squid_cache_l1: 16
+squid_cache_l1: 32
 # number of second-level directories to cache
-squid_cache_l2: 256
+squid_cache_l2: 512
 
 ## SSL Cert
 

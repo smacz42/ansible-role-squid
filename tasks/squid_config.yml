@@ -1,21 +1,11 @@
 ---
 
-- name: (squid_config) [1/2] Template /etc/squid/squid.conf is deployed
+- name: (squid_config) [1/1] Template /etc/squid/squid.conf is deployed
   template:
     src: ../templates/squid.conf.j2
     dest: /etc/squid/squid.conf
     owner: root
     group: root
     mode: 0640
-  notify:
-    - Restart squid
-
-- name: (squid_config) [2/2] File /etc/squid/redirect_to_https.py is deployed
-  copy:
-    src: ../files/redirect_to_https.py
-    dest: /etc/squid/redirect_to_https.py
-    owner: squid
-    group: squid
-    mode: 0740
   notify:
     - Restart squid
