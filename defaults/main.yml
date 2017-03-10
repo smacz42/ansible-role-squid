@@ -38,3 +38,5 @@ squid_ssl_key_file: /etc/ssl/publickeycert.pem
 httpd_ssl_cert_common_name: "{{ ansible_domain }}"
 httpd_ssl_cert_subj_string: "/C={{ httpd_ssl_cert_country }}/ST={{ httpd_ssl_cert_state }}/L={{ httpd_ssl_cert_locality }}/CN={{ httpd_ssl_cert_common_name }}"
 httpd_ssl_cert_days: 3650
+
+squid_dhparam_pem_file: /etc/ssl/dhparams.pem
