@@ -21,8 +21,7 @@
 - name: (squid_install) [4/5] New self-signed SSL cert/key pair is generated and deployed
   command: openssl req -x509 -newkey rsa:2048 -nodes -subj "{{ httpd_ssl_cert_subj_string }}" -days 3650 -keyout {{ squid_ssl_key_file }} -out {{ squid_ssl_cert_file }}
   args:
-    creates: /etc/httpd/ssl/apache.pem
-  when: new_squid_install|changed
+    creates: "{{ squid_ssl_cert_file }}"
 
 - name: (squid_install) [5/5] Create the DH pool
   command: openssl dhparam -out "{{ squid_dhparam_pem_file }}" 4096
