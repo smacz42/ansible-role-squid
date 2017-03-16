@@ -1,4 +1,4 @@
-https_port 443 accel defaultsite={{ ansible_domain }} cert={{ squid_ssl_cert_file }} key={{ squid_ssl_key_file }} options=NO_SSLv3:NO_SSLv2:CIPHER_SERVER_PREFERENCE cipher=ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:!ECDHE-RSA-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!AES256-GCM-SHA384:!AES128-GCM-SHA256:!AES256-SHA256:!AES128-SHA256:!AES256-SHA:!AES128-SHA:!DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK:!RC4 dhparams={{ squid_dhparam_pem_file }} sslflags=NO_SESSION_REUSE:DONT_VERIFY_PEER
+https_port 443 accel defaultsite={{ ansible_domain }} cert=/etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem key=/etc/letsencrypt/live/{{ ansible_fqdn }}/privkey.pem options=NO_SSLv3:NO_SSLv2:CIPHER_SERVER_PREFERENCE cipher=ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:!ECDHE-RSA-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!AES256-GCM-SHA384:!AES128-GCM-SHA256:!AES256-SHA256:!AES128-SHA256:!AES256-SHA:!AES128-SHA:!DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK:!RC4 dhparams={{ squid_dhparam_pem_file }} sslflags=NO_SESSION_REUSE:DONT_VERIFY_PEER
 http_port 80 accel
 
 cache_dir ufs /var/spool/squid {{ squid_cache_mb }} {{ squid_cache_l1 }} {{ squid_cache_l2 }}
@@ -12,6 +12,20 @@ acl {{ host.name }} dstdomain {{ ansible_domain }}
 {% endif %}
 {% endfor %}
 acl ssl_redirect localport 80
+
+{% if squid_alt_domains %}
+{% for domain in squid_alt_domains %}
+acl {{ domain.name }} dstdomain {{ domain.url }}
+{% endfor %}
+{% endif %}
+
+{% if squid_alt_domains %}
+{% for domain in squid_alt_domains %}
+http_access deny {{ domain.name }}
+deny_info https://{{ ansible_domain }}%R {{ domain.name }}
+{% endfor %}
+{% endif %}
+
 
 http_access deny ssl_redirect blog
 deny_info https://%H%R blog

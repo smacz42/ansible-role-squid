@@ -2,12 +2,14 @@
 
 ################################################################################### CHANGE ME
 
-squid_internal_ip: 75.118.161.192
+my_secret_variable: "{{ vault_my_secret_variable }}"
+
+squid_internal_ip: "{{ vault_squid_internal_ip }}"
 
 squid_backend_servers:
   - { ip: "{{ squid_internal_ip }}", port: 8000, name: blog }
   - { ip: "{{ squid_internal_ip }}", port: 8001, name: nextcloud }
-  - { ip: "{{ squid_internal_ip }}", port: 8002, name: gitlab }
+  - { ip: "{{ squid_internal_ip }}", port: 8002, name: gitlist }
 
 squid_blog_denied_subdirs:
   - css
@@ -20,6 +22,8 @@ squid_blog_denied_subdirs:
 httpd_ssl_cert_country: US
 httpd_ssl_cert_state: OH
 httpd_ssl_cert_locality: Columbus
+
+squid_alt_domains:
 
 ################################################################################### SANE DEFAULTS
 
